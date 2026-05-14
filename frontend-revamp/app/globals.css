@@ -1,0 +1,273 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* ─── Warm Night Studio — PartSelect AI token system ─── */
+@theme inline {
+  /* Core backgrounds */
+  --color-bg:          #0d0f14;
+  --color-surface-1:   #1a1820;
+  --color-surface-2:   #201e28;
+  --color-surface-3:   #252230;
+
+  /* Warm amber — signature accent */
+  --color-amber:       #d4a853;
+  --color-amber-light: #e8c070;
+  --color-amber-dim:   #a07e38;
+  --color-amber-dark:  #7a5e28;
+
+  /* Brand teal — retained as subtle glow */
+  --color-teal:        #2a9fa3;
+  --color-teal-dim:    #1a6568;
+
+  /* Semantic */
+  --color-success:     #4ade80;
+  --color-danger:      #f87171;
+  --color-warning:     #fbbf24;
+
+  /* Text hierarchy — warm ivory scale */
+  --color-text-1:      #f0ebe4;
+  --color-text-2:      #9e9690;
+  --color-text-3:      #6b6560;
+  --color-text-4:      #4a4540;
+
+  /* Borders */
+  --color-border:      rgba(255,255,255,0.07);
+  --color-border-warm: rgba(212,168,83,0.2);
+  --color-border-teal: rgba(42,159,163,0.25);
+
+  /* Legacy mappings — components referencing old ps-* names */
+  --color-ps-50:       rgba(212,168,83,0.08);
+  --color-ps-100:      rgba(212,168,83,0.14);
+  --color-ps-200:      rgba(212,168,83,0.25);
+  --color-ps-300:      rgba(212,168,83,0.4);
+  --color-ps-400:      #d4a853;
+  --color-ps-500:      #c9993a;
+  --color-ps-600:      #a07e38;
+  --color-ps-700:      #e8c070;
+  --color-ps-800:      #f0d080;
+
+  --color-success-bg:  rgba(74,222,128,0.12);
+  --color-warning-bg:  rgba(251,191,36,0.1);
+  --color-danger-bg:   rgba(248,113,113,0.1);
+
+  --color-gray-50:     rgba(255,255,255,0.04);
+  --color-gray-100:    rgba(255,255,255,0.07);
+  --color-gray-200:    rgba(255,255,255,0.1);
+  --color-gray-300:    rgba(255,255,255,0.18);
+  --color-gray-400:    #6b6560;
+  --color-gray-500:    #9e9690;
+  --color-gray-600:    #bdb8b2;
+  --color-gray-700:    #ccc8c2;
+  --color-gray-800:    #ddd9d4;
+  --color-gray-900:    #f0ebe4;
+
+  --color-background:  #0d0f14;
+  --color-surface:     #1a1820;
+
+  /* Typography */
+  --font-display: var(--font-fraunces, "Georgia", serif);
+  --font-sans:    var(--font-dm-sans, system-ui, sans-serif);
+  --font-mono:    "JetBrains Mono", "Fira Code", ui-monospace, monospace;
+}
+
+/* ─── Reset & base ─── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-bg);
+  color: var(--color-text-1);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Subtle grain overlay for tactile depth */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.028;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ─── Display font helper ─── */
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* ─── Part number mono styling ─── */
+.part-number {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  letter-spacing: 0.04em;
+}
+
+/* ─── Custom scrollbar — warm amber on dark ─── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(212,168,83,0.25);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(212,168,83,0.45); }
+
+/* ─── Typing indicator dots — warm amber ─── */
+@keyframes typing-warm {
+  0%, 80%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+  40%            { transform: translateY(-5px) scale(1.15); opacity: 1; }
+}
+
+.typing-dot:nth-child(1) { animation: typing-warm 1.3s ease-in-out infinite 0s; }
+.typing-dot:nth-child(2) { animation: typing-warm 1.3s ease-in-out infinite 0.2s; }
+.typing-dot:nth-child(3) { animation: typing-warm 1.3s ease-in-out infinite 0.4s; }
+
+/* ─── Spring message entrance ─── */
+@keyframes spring-up {
+  0%   { opacity: 0; transform: translateY(14px) scale(0.97); }
+  60%  { opacity: 1; transform: translateY(-3px) scale(1.005); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.msg-in {
+  animation: spring-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+/* ─── Card slide-up ─── */
+@keyframes slide-up-fade {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slide-up-fade 0.32s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+}
+
+/* ─── Streaming cursor blink ─── */
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+.stream-cursor::after {
+  content: '|';
+  color: var(--color-amber);
+  animation: cursor-blink 0.7s step-end infinite;
+  margin-left: 1px;
+}
+
+/* ─── Ambient orb float (welcome screen) ─── */
+@keyframes glow-float {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.55; }
+  33%       { transform: translate(-50%, -53%) scale(1.06); opacity: 0.7; }
+  66%       { transform: translate(-53%, -50%) scale(0.97); opacity: 0.5; }
+}
+
+/* ─── Status pulse dot ─── */
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.35; transform: scale(0.75); }
+}
+
+.status-pulse { animation: status-pulse 2.4s ease-in-out infinite; }
+
+/* ─── Amber glow pulse ─── */
+@keyframes amber-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212,168,83,0); }
+  50%       { box-shadow: 0 0 0 6px rgba(212,168,83,0.18); }
+}
+
+.amber-glow { animation: amber-pulse 2.5s ease-in-out infinite; }
+
+/* ─── Likelihood bar fill ─── */
+@keyframes bar-fill { from { width: 0; } }
+
+.likelihood-bar {
+  animation: bar-fill 0.7s cubic-bezier(0.34, 1.2, 0.64, 1) both;
+}
+
+/* ─── Warm shimmer button ─── */
+@keyframes warm-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.shimmer-btn {
+  background: linear-gradient(
+    90deg,
+    var(--color-amber-dim) 0%,
+    var(--color-amber-light) 40%,
+    var(--color-amber-dim) 100%
+  );
+  background-size: 200% auto;
+  transition: background-position 0.4s ease;
+}
+.shimmer-btn:hover { animation: warm-shimmer 1.2s linear infinite; }
+
+/* ─── Chip entrance ─── */
+@keyframes chip-in {
+  from { opacity: 0; transform: translateX(-8px) scale(0.94); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* ─── SVG check draw ─── */
+@keyframes check-draw {
+  from { stroke-dashoffset: 20; }
+  to   { stroke-dashoffset: 0; }
+}
+
+/* ─── Stagger delays ─── */
+.stagger-1 { animation-delay: 0ms; }
+.stagger-2 { animation-delay: 70ms; }
+.stagger-3 { animation-delay: 140ms; }
+.stagger-4 { animation-delay: 210ms; }
+.stagger-5 { animation-delay: 280ms; }
+
+/* ─── Dark glass card base ─── */
+.ps-card {
+  background: rgba(26, 24, 32, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.24s cubic-bezier(0.34,1.2,0.64,1),
+              box-shadow 0.24s ease,
+              border-color 0.24s ease;
+}
+
+.ps-card:hover {
+  border-color: rgba(212,168,83,0.22);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(212,168,83,0.08);
+  transform: translateY(-2px);
+}
+
+/* ─── Press scale ─── */
+.press-scale:active {
+  transform: scale(0.96);
+  transition: transform 0.08s ease;
+}
+
+/* ─── Focus ring ─── */
+.focus-ring {
+  outline: 2px solid var(--color-amber);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ─── Stock glow pulse ─── */
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+  50%       { box-shadow: 0 0 0 5px rgba(74,222,128,0.15); }
+}

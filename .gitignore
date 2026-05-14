@@ -1,0 +1,56 @@
+# ─── Python ──────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+ENV/
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ─── Secrets ─────────────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/.env.local
+frontend-revamp/.env.local
+frontend/.env.local
+
+# ─── Databases (live on Fly.io volume, not in repo) ──────────────────────────
+*.db
+*.db-wal
+*.db-shm
+backend/chroma_db/
+backend/partselect_backup_*.db
+
+# ─── Logs ────────────────────────────────────────────────────────────────────
+*.log
+
+# ─── Node / Next.js ──────────────────────────────────────────────────────────
+node_modules/
+frontend-revamp/node_modules/
+frontend-revamp/.next/
+frontend-revamp/out/
+frontend-revamp/build/
+frontend-revamp/.vercel
+frontend-revamp/next-env.d.ts
+frontend-revamp/*.tsbuildinfo
+.pnp
+.pnp.*
+
+# ─── Old frontend (replaced by frontend-revamp/) — excluded from monorepo ────
+frontend/
+
+# ─── OS / Editor ─────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.pem
+*.swp
+*.swo

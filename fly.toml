@@ -1,0 +1,36 @@
+app = "partselect-agent-backend"
+primary_region = "lhr"
+
+[build]
+  dockerfile = "backend/Dockerfile"
+
+[env]
+  PORT = "8080"
+  LLM_PROVIDER = "anthropic"
+  DATABASE_URL = "/data/partselect.db"
+  CHROMA_PERSIST_PATH = "/data/chroma_db"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
+
+[[mounts]]
+  source = "partselect_data"
+  destination = "/data"
+  initial_size = "3gb"
+
+[checks]
+  [checks.health]
+    grace_period = "5m"
+    interval = "30s"
+    method = "GET"
+    path = "/api/health"
+    protocol = "http"
+    timeout = "10s"

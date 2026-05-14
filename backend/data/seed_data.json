@@ -1,0 +1,228 @@
+{
+  "parts": [],
+  "models": [
+    {
+      "model_number": "WDT780SAEM1",
+      "brand": "Whirlpool",
+      "appliance_type": "dishwasher",
+      "description": "Whirlpool 24-inch built-in dishwasher with 1-Hour Wash cycle, Sensor cycle, and adjustable upper rack. 47 dBA quiet operation."
+    },
+    {
+      "model_number": "WDF520PADM7",
+      "brand": "Whirlpool",
+      "appliance_type": "dishwasher",
+      "description": "Whirlpool 24-inch dishwasher with 1-Hour Wash cycle, Sani Rinse option, and tall-tub design. 55 dBA."
+    },
+    {
+      "model_number": "WDTA50SAHZ0",
+      "brand": "Whirlpool",
+      "appliance_type": "dishwasher",
+      "description": "Whirlpool dishwasher with Third Level Rack, Sensor cycle, and Fan Dry option. 50 dBA."
+    },
+    {
+      "model_number": "WDTA80SAHZ0",
+      "brand": "Whirlpool",
+      "appliance_type": "dishwasher",
+      "description": "Whirlpool dishwasher with Fourth Level Rack Wash and Adjustable Rack. 47 dBA."
+    },
+    {
+      "model_number": "WRS325SDHZ01",
+      "brand": "Whirlpool",
+      "appliance_type": "refrigerator",
+      "description": "Whirlpool 21.4 cu ft side-by-side refrigerator with in-door ice and water dispenser, LED interior lighting, and adjustable gallon door bins."
+    },
+    {
+      "model_number": "WRF535SWHZ00",
+      "brand": "Whirlpool",
+      "appliance_type": "refrigerator",
+      "description": "Whirlpool 24.7 cu ft French door refrigerator with external ice and water dispenser, built-in ice maker, and humidity-controlled crispers."
+    },
+    {
+      "model_number": "WRS321SDHZ01",
+      "brand": "Whirlpool",
+      "appliance_type": "refrigerator",
+      "description": "Whirlpool 20.6 cu ft side-by-side refrigerator with exterior water and ice dispenser. LED interior lighting."
+    },
+    {
+      "model_number": "WRS588FIHZ00",
+      "brand": "Whirlpool",
+      "appliance_type": "refrigerator",
+      "description": "Whirlpool 28.4 cu ft side-by-side refrigerator with in-door ice and water dispenser and flexible storage options."
+    },
+    {
+      "model_number": "WRF767SDHZ00",
+      "brand": "Whirlpool",
+      "appliance_type": "refrigerator",
+      "description": "Whirlpool 26.8 cu ft French door refrigerator with dual ice maker, exterior dispenser, and FreshFlow air filter."
+    },
+    {
+      "model_number": "KRMF706ESS01",
+      "brand": "KitchenAid",
+      "appliance_type": "refrigerator",
+      "description": "KitchenAid 25.8 cu ft French door refrigerator with Platinum Interior Design, full-width pantry drawer, and external ice and water dispenser."
+    },
+    {
+      "model_number": "KDTM354ESS1",
+      "brand": "KitchenAid",
+      "appliance_type": "dishwasher",
+      "description": "KitchenAid 44 dBA dishwasher with FreeFlex Third Level Rack, ProWash cycle, and bottle wash jets."
+    },
+    {
+      "model_number": "KDTE234GPS0",
+      "brand": "KitchenAid",
+      "appliance_type": "dishwasher",
+      "description": "KitchenAid dishwasher with ProScrub option, third-level rack, and Dynamic Wash Arms. 46 dBA."
+    },
+    {
+      "model_number": "MDB8989SHZ0",
+      "brand": "Maytag",
+      "appliance_type": "dishwasher",
+      "description": "Maytag 50 dBA dishwasher with Dual Power Filtration, Wash zones, and 4-Blade Stainless Steel Chopper."
+    },
+    {
+      "model_number": "MRT711SMFZ00",
+      "brand": "Maytag",
+      "appliance_type": "refrigerator",
+      "description": "Maytag 21.2 cu ft top-freezer refrigerator with PowerCold feature, LED interior lighting, and adjustable door bins."
+    },
+    {
+      "model_number": "MFI2570FEZ00",
+      "brand": "Maytag",
+      "appliance_type": "refrigerator",
+      "description": "Maytag 24.7 cu ft French door refrigerator with dual ice maker, PowerCold feature, and exterior dispenser."
+    }
+  ],
+  "compatibility": [],
+  "symptoms": [
+    {
+      "appliance_type": "refrigerator",
+      "symptom_keywords": "ice maker not working, no ice, ice maker stopped, ice maker not making ice, ice maker broken",
+      "symptom_description": "Refrigerator ice maker is not producing ice or has stopped working",
+      "likely_parts": [
+        "PS11752899",
+        "PS11724432",
+        "PS11742379"
+      ],
+      "repair_guidance": "Start by checking if the ice maker is turned on and the freezer temperature is set below 10\u00c2\u00b0F. If water supply is confirmed, the ice maker assembly (PS11752899) is the most common cause. If the unit powers on but makes no ice, check the water inlet valve (PS11724432) \u00e2\u20ac\u201d it may not be opening to let water in. If ice was being made but the unit thinks the bin is full when it is not, replace the ice level control board (PS11742379)."
+    },
+    {
+      "appliance_type": "refrigerator",
+      "symptom_keywords": "not cooling, warm fridge, not cold, temperature too high, refrigerator warm, food spoiling",
+      "symptom_description": "Refrigerator is not maintaining cold temperature or food is spoiling",
+      "likely_parts": [
+        "PS11768502",
+        "PS11753382",
+        "PS11757835"
+      ],
+      "repair_guidance": "First check that the condenser coils (behind or beneath the unit) are not dirty \u00e2\u20ac\u201d vacuum them. Then test the evaporator fan motor (PS11768502) \u00e2\u20ac\u201d if it is not running, cold air cannot circulate from the freezer. A failed defrost thermostat (PS11753382) can cause ice build-up on the evaporator that blocks airflow. The compressor start relay (PS11757835) is a $19 fix worth trying before replacing the compressor itself."
+    },
+    {
+      "appliance_type": "refrigerator",
+      "symptom_keywords": "leaking water, water on floor, water pooling under fridge, dripping, water leak",
+      "symptom_description": "Water is leaking from the refrigerator onto the floor",
+      "likely_parts": [
+        "PS11724432",
+        "PS11752899",
+        "PS11744531"
+      ],
+      "repair_guidance": "Water leaks usually come from three places: the water inlet valve (PS11724432) if it has a cracked fitting, the ice maker assembly (PS11752899) if the fill cup is misaligned, or a damaged door gasket (PS11744531) allowing warm air condensation to drip. Check whether water appears near the back of the unit (inlet valve) or in the freezer floor (ice maker)."
+    },
+    {
+      "appliance_type": "refrigerator",
+      "symptom_keywords": "loud noise, humming, buzzing, rattling, grinding, noisy fridge, clicking",
+      "symptom_description": "Refrigerator making loud or unusual noises",
+      "likely_parts": [
+        "PS11768502",
+        "PS11752316",
+        "PS11757835"
+      ],
+      "repair_guidance": "A loud humming or rattling often comes from the evaporator fan motor (PS11768502) \u00e2\u20ac\u201d worn bearings cause a grinding noise that gets louder when you open the freezer. If the sound comes from the back bottom of the unit, suspect the condenser fan motor (PS11752316). A clicking sound every 2\u00e2\u20ac\u201c3 minutes with no cooling usually means the compressor start relay (PS11757835) is failing."
+    },
+    {
+      "appliance_type": "refrigerator",
+      "symptom_keywords": "door not sealing, door gasket torn, warm door edge, condensation on door, door not closing properly",
+      "symptom_description": "Refrigerator door is not sealing properly, allowing warm air to enter",
+      "likely_parts": [
+        "PS11744531",
+        "PS11752400",
+        "PS11744889"
+      ],
+      "repair_guidance": "Test the seal by closing the door on a piece of paper \u00e2\u20ac\u201d if it slides out easily, the gasket needs replacement. Check the fresh food door gasket (PS11744531) first, then the freezer door gasket (PS11752400). Also test the opposite door gasket (PS11744889) if you see frost at the door edge. Ensure the door hinges are tight and the door is level before assuming the gasket is the cause."
+    },
+    {
+      "appliance_type": "refrigerator",
+      "symptom_keywords": "ice maker leaking, ice maker dripping, water in ice bin, water pooling in freezer, ice clumping",
+      "symptom_description": "Ice maker is leaking water into the freezer or into the ice bin",
+      "likely_parts": [
+        "PS11724432",
+        "PS11752611"
+      ],
+      "repair_guidance": "Water leaking into the ice bin or pooling on the freezer floor usually means the water inlet valve (PS11724432) is not closing completely after a fill cycle. Ice forming in a ring around the fill tube or a freeze-up at the inlet suggests the ice maker water fill tube (PS11752611) is cracked or has shifted out of position."
+    },
+    {
+      "appliance_type": "dishwasher",
+      "symptom_keywords": "not draining, standing water, water at bottom, won't drain, water left in dishwasher",
+      "symptom_description": "Dishwasher has standing water at the bottom of the tub after a cycle completes",
+      "likely_parts": [
+        "PS11744150",
+        "PS11743462",
+        "PS11748172"
+      ],
+      "repair_guidance": "First clean the filter assembly (PS11743462) \u00e2\u20ac\u201d a clogged filter is the number-one cause of poor draining and requires no tools, just a quarter-turn removal and rinse. If the filter is clean, the drain pump (PS11744150) is likely failing \u00e2\u20ac\u201d you may hear it try to run but not move water. Also check that the drain hose is not kinked and that the garbage disposal knockout plug has been removed if you recently installed a disposal."
+    },
+    {
+      "appliance_type": "dishwasher",
+      "symptom_keywords": "not cleaning, dirty dishes, food residue, poor wash, dishes not clean, spots on dishes",
+      "symptom_description": "Dishwasher is not cleaning dishes properly \u00e2\u20ac\u201d food residue remains after a full cycle",
+      "likely_parts": [
+        "PS11745299",
+        "PS11743462",
+        "PS11752722"
+      ],
+      "repair_guidance": "Check the filter (PS11743462) first \u00e2\u20ac\u201d a dirty filter is the most common reason dishes come out with food still on them, and cleaning it is free. Then inspect the spray arms (PS11745299): hold them up to the light and check that each hole is clear \u00e2\u20ac\u201d use a toothpick to clear any clogged holes. If water pressure still seems weak after cleaning, the circulation pump motor (PS11752722) may be failing and will need replacement."
+    },
+    {
+      "appliance_type": "dishwasher",
+      "symptom_keywords": "leaking, water on floor, dishwasher leak, water under dishwasher, leaking from door",
+      "symptom_description": "Dishwasher is leaking water onto the kitchen floor",
+      "likely_parts": [
+        "PS11757106",
+        "PS11731570",
+        "PS11748172"
+      ],
+      "repair_guidance": "Door leaks during a wash cycle almost always mean the door seal/gasket (PS11757106) has hardened or torn \u00e2\u20ac\u201d inspect it for cracks or gaps. Leaks from the front lower area of the door during the wash cycle often come from the detergent dispenser (PS11731570) cracking over time. A slow drip from under the unit at the back indicates the water inlet valve (PS11748172) has a loose fitting or a hairline crack."
+    },
+    {
+      "appliance_type": "dishwasher",
+      "symptom_keywords": "door not latching, door won't close, door stays open, door falls open, can't start dishwasher",
+      "symptom_description": "Dishwasher door is not latching shut, preventing the cycle from starting",
+      "likely_parts": [
+        "PS11746129",
+        "PS11749051",
+        "PS11751180"
+      ],
+      "repair_guidance": "If the door does not click closed, the door latch (PS11746129) is the primary suspect \u00e2\u20ac\u201d it is a quick repair with just a screwdriver and the most common cause of a dishwasher that will not start. If the door closes but swings open or feels floppy, the door balance link kit (PS11749051) or door spring (PS11751180) has likely snapped. Inspect both sides of the door at the bottom hinge area for broken straps or springs."
+    },
+    {
+      "appliance_type": "dishwasher",
+      "symptom_keywords": "not drying, wet dishes, dishes still wet after cycle, poor drying, dishes dripping",
+      "symptom_description": "Dishwasher is not drying dishes effectively \u00e2\u20ac\u201d dishes come out wet after the cycle ends",
+      "likely_parts": [
+        "PS11751043",
+        "PS11750035",
+        "PS11769028"
+      ],
+      "repair_guidance": "First check that you are using rinse aid \u00e2\u20ac\u201d it dramatically improves drying and is often overlooked. Then test the heating element (PS11751043) for continuity with a multimeter \u00e2\u20ac\u201d a broken element is the most common cause of drying failure. The high limit thermostat (PS11750035) can trip and cut power to the heating element as a safety measure; test it too before assuming the element is bad. Finally, verify the vent assembly (PS11769028) opens at the end of the cycle to exhaust moist air."
+    },
+    {
+      "appliance_type": "dishwasher",
+      "symptom_keywords": "error E1, E1 error code, F8E1, water not filling, dishwasher won't fill, no water",
+      "symptom_description": "Dishwasher showing E1 error code or not filling with water at the start of a cycle",
+      "likely_parts": [
+        "PS11748172",
+        "PS11751280"
+      ],
+      "repair_guidance": "An E1 error means the dishwasher is not detecting enough water entering the tub. First check that the water supply valve under the sink is fully open. Then test the water inlet valve (PS11748172) \u00e2\u20ac\u201d a failed solenoid will not open to let water in. Also check the float switch (PS11751280): locate the small float dome in the front corner of the tub and press it down \u00e2\u20ac\u201d if it is stuck in the up position, it will signal the tub is full even when it is empty."
+    }
+  ]
+}
