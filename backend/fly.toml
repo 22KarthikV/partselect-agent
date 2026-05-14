@@ -2,7 +2,7 @@ app = "partselect-agent-backend-22karthikv"
 primary_region = "lhr"
 
 [build]
-  dockerfile = "backend/Dockerfile"
+  dockerfile = "Dockerfile"
 
 [env]
   PORT = "8080"
