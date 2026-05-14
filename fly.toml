@@ -1,4 +1,4 @@
-app = "partselect-agent-backend"
+app = "partselect-agent-backend-22karthikv"
 primary_region = "lhr"
 
 [build]
@@ -28,6 +28,8 @@ primary_region = "lhr"
 
 [checks]
   [checks.health]
+    type = "http"
+    port = 8080
     grace_period = "5m"
     interval = "30s"
     method = "GET"
