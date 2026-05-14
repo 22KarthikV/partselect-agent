@@ -1,3 +1,15 @@
+/**
+ * @file CompatibilityBadge — displays the result of a part-to-model compatibility check.
+ *
+ * Expected data shape: {@link CompatibilityData}
+ *   - part_number / part_name: the part being checked
+ *   - model_number / model_description: the appliance model it was checked against
+ *   - is_compatible: drives the green/red colour scheme throughout the card
+ *   - explanation: a sentence from the backend explaining the result
+ *   - alternative_parts: shown only when is_compatible is false; up to 2 ProductCards
+ *     are rendered as drop-in replacement suggestions
+ */
+
 "use client";
 
 import type { CompatibilityData } from "@/lib/types";

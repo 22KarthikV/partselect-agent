@@ -1,3 +1,17 @@
+/**
+ * @file InstallSteps — interactive installation guide for a single spare part.
+ *
+ * Expected data shape: {@link InstallStepsData}
+ *   - part_number / part_name: identify the part being installed
+ *   - steps: ordered array of instruction strings; each step is clickable to
+ *     toggle its completion state
+ *   - estimated_time: human-readable duration string (e.g. "30–45 minutes")
+ *   - tools_needed: array of tool names; falls back to "No tools required"
+ *
+ * Tracks completed steps in a local Set<number> to drive the progress bar and
+ * per-step visual states.  Shows a completion banner when all steps are checked.
+ */
+
 "use client";
 
 import { useState } from "react";

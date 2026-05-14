@@ -1,3 +1,13 @@
+/**
+ * @file Root layout — applies global fonts and metadata to every page.
+ *
+ * Loads two variable fonts via next/font/google (Fraunces for display text,
+ * DM Sans for body copy) and exposes them as CSS custom properties
+ * (--font-fraunces, --font-dm-sans) consumed throughout globals.css.
+ * The html and body elements are sized to fill the viewport so the single-page
+ * chat layout can use h-full without extra wrapper divs.
+ */
+
 import type { Metadata } from "next";
 import { Fraunces, DM_Sans } from "next/font/google";
 import "./globals.css";

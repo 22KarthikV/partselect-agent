@@ -1,3 +1,15 @@
+/**
+ * @file InputBar — the chat input area with an auto-resizing textarea and send button.
+ *
+ * The textarea starts as a single row and grows up to 6 lines as the user types,
+ * then scrolls internally beyond that.  A font-size of 16px (text-base) on mobile
+ * prevents iOS Safari from zooming the viewport on focus — text-sm is applied only
+ * on sm: breakpoints where the viewport is wide enough.
+ *
+ * The focusTrigger prop is an incrementing integer: when its value changes the
+ * textarea is re-focused, returning keyboard control to the user after each send.
+ */
+
 "use client";
 
 import { useRef, useEffect, useState, KeyboardEvent } from "react";
@@ -24,7 +36,7 @@ export default function InputBar({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isFocused, setIsFocused] = useState(false);
 
-  // Auto-resize textarea up to 6 lines
+  // Reset to "auto" first so scrollHeight reflects the content, then cap at 6 rows.
   useEffect(() => {
     const el = textareaRef.current;
     if (!el) return;
@@ -32,7 +44,7 @@ export default function InputBar({
     el.style.height = `${Math.min(el.scrollHeight, 6 * 24)}px`;
   }, [value]);
 
-  // Re-focus after each send completes
+  // Re-focus the textarea after each completed send so the user can type immediately.
   useEffect(() => {
     if (focusTrigger) textareaRef.current?.focus();
   }, [focusTrigger]);

@@ -1,3 +1,17 @@
+/**
+ * @file OrderStatusCard — displays the current status of a PartSelect order.
+ *
+ * Expected data shape: {@link OrderStatusData}
+ *   - status: one of "processing" | "shipped" | "delivered" | "not_found"
+ *     Unknown status strings are handled gracefully via a neutral fallback style.
+ *   - order_id, estimated_delivery, tracking_number, items: standard order fields
+ *   - message: present only when status is "not_found"; provides a human-readable
+ *     explanation shown in a minimal error variant instead of the full card layout.
+ *
+ * The not_found case renders a slim error tile rather than the full card to avoid
+ * showing empty delivery and item sections.
+ */
+
 "use client";
 
 import type { OrderStatusData } from "@/lib/types";

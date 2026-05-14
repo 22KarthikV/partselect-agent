@@ -1,3 +1,18 @@
+/**
+ * @file ProductListCard — compact list of parts available for a specific appliance model.
+ *
+ * Expected data shape: {@link ProductListData}
+ *   - model_number / brand / appliance_type / description: appliance identity
+ *   - parts: full array of Part objects for this model
+ *   - total_count: authoritative count from the backend (may exceed parts.length
+ *     if the backend paginates)
+ *
+ * Renders the first PAGE_SIZE (6) parts immediately and toggles to show all on
+ * demand.  Newly revealed rows animate in with a staggered slide-up to avoid a
+ * jarring layout jump.  Part links fall back to the PartSelect search URL when
+ * partselect_url is absent, matching the same logic used in ProductCard.
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -70,6 +85,7 @@ export default function ProductListCard({ data }: ProductListCardProps) {
       {/* Parts list */}
       <ul>
         {visibleParts.map((part, i) => {
+          // Fall back to PartSelect search URL when the part lacks a direct link.
           const url = part.partselect_url || `https://www.partselect.com/search.aspx?SearchTerm=${part.ps_number}`;
           return (
             <li

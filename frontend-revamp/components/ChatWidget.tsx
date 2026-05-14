@@ -1,3 +1,20 @@
+/**
+ * @file ChatWidget — the core chat orchestrator component.
+ *
+ * Manages the full message lifecycle: user input → SSE streaming → rich-card
+ * accumulation → persistence → follow-up suggestion generation.  Also handles
+ * inactivity timeouts, demo triggers from the parent page, and the backend
+ * health banner.
+ *
+ * Key design decisions documented inline:
+ *   - messagesRef / inputRef avoid stale-closure captures inside useCallback.
+ *   - sendingRef prevents double-sends from rapid clicks before React state settles.
+ *   - justStoppedStreamingRef gates the post-stream side-effect so it runs once
+ *     with the fully-accumulated message text rather than on every render.
+ *   - Suggestion chips use event delegation (document click) so they work even
+ *     when rendered inside the virtualisable MessageList scroll container.
+ */
+
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
@@ -95,13 +112,19 @@ export default function ChatWidget({ demoTrigger, userId, initialMessages, initi
   // exactly once after streaming ends, using the freshly-rendered messages.
   const justStoppedStreamingRef = useRef(false);
 
-  // Extract the most recent appliance model number from conversation history.
-  // Pattern: 2-4 uppercase letters + 3-4 digits + 3-8 alphanumeric chars (e.g. WDT780SAEM1).
-  // Filters out PS-prefixed part numbers to reduce false positives.
+  /**
+   * Extract the most recent appliance model number from conversation history.
+   *
+   * Pattern: 2-4 uppercase letters + 3-4 digits + 3-8 alphanumeric chars
+   * (e.g. WDT780SAEM1, WRS325SDHZ01).
+   * PS-prefixed tokens (PartSelect part numbers) and WP-prefixed tokens
+   * (Whirlpool OEM part numbers) are explicitly excluded to avoid false matches.
+   */
   function extractModelFromHistory(msgs: UIMessage[]): string | undefined {
     const modelPattern = /\b([A-Z]{2,4}[0-9]{3,4}[A-Z0-9]{3,8})\b/g;
     for (let i = msgs.length - 1; i >= 0; i--) {
       const matches = [...(msgs[i].text.matchAll(modelPattern))];
+      // Filter PS/WP prefixes — those are part numbers, not appliance models.
       const model = matches.find((m) => !m[1].startsWith("PS") && !m[1].startsWith("WP"));
       if (model) return model[1];
     }
@@ -304,7 +327,9 @@ export default function ChatWidget({ demoTrigger, userId, initialMessages, initi
     }
   }, [isStreaming, resetActivity, persistSession]);
 
-  // Suggestion chips in MessageList auto-send on click instead of just filling the input
+  // Event delegation: a single document-level listener handles all suggestion chip
+  // clicks.  This avoids attaching per-chip handlers inside the scroll container
+  // and ensures chips rendered after the effect mounts are also handled correctly.
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
@@ -320,8 +345,9 @@ export default function ChatWidget({ demoTrigger, userId, initialMessages, initi
     return () => document.removeEventListener("click", handler);
   }, [isStreaming, sendMessage]);
 
-  // React to demo triggers: clear conversation and send the demo query.
-  // Guard against isStreaming — don't wipe messages mid-stream.
+  // React to demo triggers from the parent page.  The effect depends on
+  // demoTrigger?.id (not .text) so it fires even when the same query is selected
+  // twice in a row.  The isStreaming guard prevents wiping an active conversation.
   useEffect(() => {
     if (!demoTrigger?.text || isStreaming) return;
     setMessages([]);

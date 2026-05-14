@@ -1,3 +1,13 @@
+/**
+ * @file MessageList — scrollable container for all chat messages.
+ *
+ * Renders the welcome screen when the conversation is empty, or the ordered
+ * list of MessageBubble components plus the TypingIndicator while streaming.
+ * Follow-up suggestion chips are rendered at the bottom after streaming ends;
+ * they carry data-suggestion attributes that ChatWidget's event-delegation
+ * listener picks up to fire sends without prop drilling.
+ */
+
 "use client";
 
 import { useEffect, useRef } from "react";
@@ -58,6 +68,8 @@ const CAPABILITIES = [
 export default function MessageList({ messages, isStreaming, streamingLabel, suggestions = [] }: MessageListProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // Scroll to the invisible sentinel div at the end of the list whenever a new
+  // message arrives or streaming state changes, keeping the latest content visible.
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isStreaming]);

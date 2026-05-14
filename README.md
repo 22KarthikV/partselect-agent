@@ -6,7 +6,7 @@ An intelligent chat agent for the PartSelect.com e-commerce platform, scoped to 
 
 **[https://partselect-agent-ten.vercel.app/](https://partselect-agent-ten.vercel.app/)**
 
-Backend: Railway (FastAPI + ChromaDB) · Frontend: Vercel (Next.js)
+Frontend: Vercel (Next.js) · Backend: FastAPI + Docker
 
 ## What makes it impressive
 

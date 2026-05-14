@@ -1,3 +1,23 @@
+/**
+ * @file HistorySidebar — slide-in drawer listing the user's saved conversations.
+ *
+ * This component does not exist in the legacy frontend/ directory; it was
+ * introduced in the frontend-revamp alongside the conversation persistence API.
+ *
+ * The sidebar fetches the current user's conversation list from
+ * GET /api/conversations on open, groups results into Today / Yesterday / This week /
+ * Older buckets, and lets the user click any entry to restore it in ChatWidget.
+ * Restoring a conversation fetches its full message history, then calls onSelect
+ * with the ID and messages so the parent page can pass them as initialMessages to
+ * a freshly-keyed ChatWidget instance.
+ *
+ * A translucent backdrop is rendered behind the panel; clicking it closes the
+ * sidebar without selecting a conversation.  Panel width is capped at
+ * min(300px, 85vw) so it never covers the full viewport on small screens.
+ * Conversation history is persisted server-side but scoped to the client-generated
+ * userId stored in localStorage — no login required.
+ */
+
 "use client";
 
 import { useEffect, useState } from "react";

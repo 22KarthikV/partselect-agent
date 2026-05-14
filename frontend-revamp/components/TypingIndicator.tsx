@@ -1,3 +1,15 @@
+/**
+ * @file TypingIndicator — animated "thinking" bubble shown while the assistant streams.
+ *
+ * Displays three bouncing amber dots with a CSS keyframe animation defined in
+ * globals.css (.typing-dot).  An optional label prop (e.g. "Searching catalog…")
+ * is rendered next to the dots to communicate which tool the backend is currently
+ * executing.  A visually-hidden aria-live region repeats the label for screen readers.
+ *
+ * The completedSteps prop is accepted in the interface for potential future use
+ * (e.g. a reasoning breadcrumb) but is not currently rendered.
+ */
+
 "use client";
 
 interface TypingIndicatorProps {

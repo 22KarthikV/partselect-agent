@@ -1,3 +1,16 @@
+/**
+ * @file ProductCard — rich card for a single spare part.
+ *
+ * Expected data shape: {@link Part} — including ps_number, mfr_number, name,
+ * category, price, in_stock, description, image_url, and partselect_url.
+ *
+ * Renders a product image with lazy-loading, part numbers with a one-click copy
+ * button, price, stock status, a short description, and a CTA link to the live
+ * PartSelect listing.  The amber gradient CTA uses inline style rather than a
+ * Tailwind class because the shimmer animation (defined in globals.css) requires
+ * an exact background property that Tailwind's JIT would purge.
+ */
+
 "use client";
 
 import { useState } from "react";
@@ -12,6 +25,7 @@ export default function ProductCard({ data }: ProductCardProps) {
   const [copied, setCopied] = useState(false);
   const [hovered, setHovered] = useState(false);
 
+  // Fall back to the PartSelect search URL when the catalog record lacks a direct link.
   const partUrl =
     data.partselect_url ||
     `https://www.partselect.com/search.aspx?SearchTerm=${data.ps_number}`;

@@ -1,12 +1,25 @@
+/**
+ * @file API client for the PartSelect AI chat frontend.
+ *
+ * All network calls go through the Next.js route handlers (/api/*) rather than
+ * directly to the FastAPI backend.  This keeps the backend URL server-side only
+ * and lets Vercel handle CORS automatically.
+ */
+
 import type { ChatMessage, ConversationSummary, RichCard, SSEEvent, SaveMessage, UIMessage } from "./types";
 
 /**
  * Stream a chat request to the Next.js proxy route and yield parsed SSE events.
  *
- * Usage:
- *   for await (const event of streamChat(messages)) {
- *     // handle event
- *   }
+ * The function opens a POST request and reads the response body as a
+ * ReadableStream.  Chunks are decoded and accumulated in a string buffer.
+ * Complete SSE messages (delimited by \n\n) are parsed and yielded one at a
+ * time; the generator exits early when a "done" event is received.
+ *
+ * @param messages - Full conversation history to send as context.
+ * @param sessionId - Opaque ID used by the backend to correlate turns within a session.
+ * @yields Parsed {@link SSEEvent} objects in the order they arrive from the server.
+ * @throws {Error} If the HTTP request fails or the response body is absent.
  */
 export async function* streamChat(
   messages: ChatMessage[],
@@ -38,9 +51,10 @@ export async function* streamChat(
 
       buffer += decoder.decode(value, { stream: true });
 
-      // SSE lines are separated by \n\n
+      // SSE frames are separated by \n\n — split on that boundary.
       const lines = buffer.split("\n\n");
-      buffer = lines.pop() ?? ""; // last element may be incomplete
+      // The last element is kept in the buffer because it may be an incomplete frame.
+      buffer = lines.pop() ?? "";
 
       for (const chunk of lines) {
         const line = chunk.trim();
@@ -66,6 +80,13 @@ export function generateId(): string {
   return crypto.randomUUID();
 }
 
+/**
+ * Fetch the list of saved conversations for the given user.
+ * Returns an empty array on any network or HTTP error so callers never need
+ * to handle a rejection.
+ *
+ * @param userId - Client-side UUID stored in localStorage.
+ */
 export async function fetchConversations(userId: string): Promise<ConversationSummary[]> {
   try {
     const res = await fetch(`/api/conversations?user_id=${encodeURIComponent(userId)}`);
@@ -76,6 +97,12 @@ export async function fetchConversations(userId: string): Promise<ConversationSu
   }
 }
 
+/**
+ * Load all messages for a previously saved conversation and convert them to
+ * UIMessage objects suitable for direct insertion into component state.
+ *
+ * @param convId - The conversation UUID.
+ */
 export async function fetchConversationMessages(convId: string): Promise<UIMessage[]> {
   try {
     const res = await fetch(`/api/conversations/${encodeURIComponent(convId)}/messages`);
@@ -93,6 +120,15 @@ export async function fetchConversationMessages(convId: string): Promise<UIMessa
   }
 }
 
+/**
+ * Persist a completed conversation to the backend.  Failures are swallowed
+ * intentionally — persistence is best-effort and must never interrupt the UI.
+ *
+ * @param sessionId - Session UUID used as the conversation's stable identifier.
+ * @param userId - Client-side user UUID.
+ * @param title - Human-readable title derived from the first user message.
+ * @param messages - The serialisable form of all messages to store.
+ */
 export async function saveConversation(
   sessionId: string,
   userId: string,

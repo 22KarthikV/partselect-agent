@@ -1,3 +1,18 @@
+/**
+ * @file TroubleshootCard — displays a symptom-based diagnosis with ranked candidate parts.
+ *
+ * Expected data shape: {@link TroubleshootData}
+ *   - appliance_type: "refrigerator" | "dishwasher" (displayed capitalised in the header)
+ *   - symptom: one-line description of the problem
+ *   - diagnosed_parts: array of { part, likelihood, reason } — rendered in order
+ *   - repair_guidance: optional free-text repair advice
+ *   - safety_note: optional safety warning shown at the bottom
+ *
+ * Each part row includes a likelihood badge, a proportional bar indicator, a
+ * reasoning excerpt, and thumbs-up/down feedback buttons (client-side only — the
+ * votes are not persisted in this version).
+ */
+
 "use client";
 
 import { useState } from "react";

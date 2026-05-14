@@ -1,3 +1,17 @@
+/**
+ * @file MessageBubble — renders a single chat turn for both user and assistant roles.
+ *
+ * User messages are displayed as right-aligned amber gradient bubbles.
+ * Assistant messages show a PS avatar followed by either a markdown text bubble
+ * or one-or-more rich cards (or both when text accompanies a card).
+ *
+ * Rich cards are dispatched by RichCardRenderer, a local switch-based component
+ * that maps each RichContentType to the appropriate card component.  The data is
+ * cast with "as" because the discriminated SSEEvent union guarantees the correct
+ * payload type for each content_type — TypeScript cannot narrow through the
+ * generic RichCard wrapper at this point.
+ */
+
 "use client";
 
 import ReactMarkdown from "react-markdown";

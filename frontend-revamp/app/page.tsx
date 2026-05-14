@@ -1,3 +1,12 @@
+/**
+ * @file Root page — the single screen of the PartSelect AI chat application.
+ *
+ * Renders the dark glass header (branding, status, live catalog stats, Demo
+ * dropdown, History and New Chat buttons), the full-height ChatWidget, and the
+ * HistorySidebar drawer.  All per-session state — demo triggers, conversation
+ * history, user ID — originates here and is passed down as props.
+ */
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -112,6 +121,9 @@ export default function Home() {
 
   const handleDemo = (query: string) => {
     setShowDemoMenu(false);
+    // Incrementing the numeric `id` field signals to ChatWidget that this is a
+    // new trigger even when the query text is identical to the previous one.
+    // ChatWidget watches demoTrigger?.id via useEffect so it fires every time.
     setDemoTrigger((prev) => ({ text: query, id: (prev?.id ?? 0) + 1 }));
   };
 
