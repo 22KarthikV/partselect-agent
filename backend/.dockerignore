@@ -1,0 +1,36 @@
+# Local runtime artifacts — these are recreated inside the container via
+# the entrypoint script (seeding) and persisted on the Fly.io volume.
+# They MUST NOT be uploaded as build context.
+*.db
+*.db-wal
+*.db-shm
+partselect_backup_*.db
+chroma_db/
+
+# Python bytecode / caches
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Logs
+*.log
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Secrets — provided via Fly.io secrets at runtime, never baked in
+.env
+.env.local
+.env.*.local
+
+# Test files (not needed at runtime)
+test_*.py
+*_test.py
