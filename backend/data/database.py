@@ -1,3 +1,16 @@
+"""SQLite data access layer for the PartSelect AI Agent.
+
+Provides the repository interface for parts, models, compatibility, symptoms,
+and conversation history. All functions open their own connection via
+get_db_connection() and close it automatically via the context manager.
+
+Key design decisions:
+  - WAL journal mode: allows concurrent reads alongside writes (important for
+    FastAPI's async request handling with multiple workers).
+  - row_factory = sqlite3.Row: lets code address columns by name.
+  - install_steps and likely_parts are stored as JSON strings and deserialised
+    by _row_to_dict() on every read, keeping the schema flat.
+"""
 import json
 import os
 import sqlite3
@@ -8,6 +21,15 @@ DATABASE_URL = os.environ.get("DATABASE_URL", "./partselect.db")
 
 
 def get_db_connection() -> sqlite3.Connection:
+    """Open and configure a SQLite connection.
+
+    WAL mode is enabled for concurrent read performance.
+    The row_factory is set so callers can address columns by name.
+
+    Returns:
+        An open sqlite3.Connection. Must be used as a context manager
+        (``with get_db_connection() as conn:``) to ensure it is closed.
+    """
     conn = sqlite3.connect(DATABASE_URL)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA journal_mode=WAL")
@@ -16,6 +38,16 @@ def get_db_connection() -> sqlite3.Connection:
 
 
 def create_tables(conn: sqlite3.Connection) -> None:
+    """Create all application tables and indexes if they do not already exist.
+
+    Idempotent — safe to call on every application startup. Also handles the
+    backward-compatible ALTER TABLE to add the ``rich_cards`` column to databases
+    created before that column was introduced (the ALTER is silently ignored if
+    the column already exists).
+
+    Args:
+        conn: An open SQLite connection.
+    """
     conn.executescript("""
         CREATE TABLE IF NOT EXISTS parts (
             ps_number       TEXT PRIMARY KEY,
@@ -90,6 +122,15 @@ def create_tables(conn: sqlite3.Connection) -> None:
 
 
 def _row_to_dict(row: sqlite3.Row) -> dict:
+    """Convert a sqlite3.Row to a plain dict, deserialising JSON fields.
+
+    Fields deserialised in-place:
+      - install_steps: JSON string → list[str]
+      - likely_parts:  JSON string → list[str]
+      - in_stock:      INTEGER (0/1) → bool
+
+    Returns an empty-list fallback for any field that fails JSON parsing.
+    """
     d = dict(row)
     if "install_steps" in d and isinstance(d["install_steps"], str):
         try:
@@ -120,6 +161,14 @@ def get_part_by_number(part_number: str) -> dict | None:
 
 
 def get_model_info(model_number: str) -> dict | None:
+    """Look up an appliance model by model number.
+
+    Args:
+        model_number: Exact model number string (e.g. "WDT780SAEM1").
+
+    Returns:
+        Plain dict with brand, appliance_type, description; or None if not found.
+    """
     with get_db_connection() as conn:
         row = conn.execute(
             "SELECT * FROM models WHERE model_number = ?", (model_number,)
@@ -165,6 +214,16 @@ def get_compatibility(part_number: str, model_number: str) -> tuple[bool, str]:
 
 
 def get_parts_for_model(model_number: str, category: str | None = None) -> list[dict]:
+    """Return all parts compatible with a model, optionally filtered by category.
+
+    Args:
+        model_number: Appliance model number.
+        category: Optional category slug (e.g. "ice-maker"). If None, all
+                  compatible parts are returned ordered by category then price.
+
+    Returns:
+        List of part dicts; empty list if no compatibility records exist.
+    """
     with get_db_connection() as conn:
         if category:
             rows = conn.execute(
@@ -186,6 +245,15 @@ def get_parts_for_model(model_number: str, category: str | None = None) -> list[
 
 
 def get_parts_by_category(appliance_type: str, category: str) -> list[dict]:
+    """Return all parts of a given category for a given appliance type, sorted by price.
+
+    Args:
+        appliance_type: "refrigerator" or "dishwasher".
+        category: Category slug (e.g. "pump", "door-bins").
+
+    Returns:
+        List of part dicts ordered by price ascending.
+    """
     with get_db_connection() as conn:
         rows = conn.execute(
             "SELECT * FROM parts WHERE appliance_type = ? AND category = ? ORDER BY price ASC",
@@ -195,6 +263,18 @@ def get_parts_by_category(appliance_type: str, category: str) -> list[dict]:
 
 
 def search_parts_by_keywords(query: str, appliance_type: str | None = None) -> list[dict]:
+    """Full-text keyword search over the parts table using SQL LIKE.
+
+    Matches against name, description, category, and mfr_number.
+    Results are ranked: name matches first, then by price ascending.
+
+    Args:
+        query: Search string. A single ``%query%`` LIKE pattern is applied.
+        appliance_type: Optional filter. If None, all appliance types are searched.
+
+    Returns:
+        Up to 20 matching part dicts.
+    """
     like = f"%{query}%"
     with get_db_connection() as conn:
         if appliance_type:
@@ -246,6 +326,18 @@ def get_symptoms_by_keywords(symptom: str, appliance_type: str) -> list[dict]:
 
 
 def get_parts_by_ps_numbers(ps_numbers: list[str]) -> list[dict]:
+    """Bulk-fetch parts by a list of PS numbers, preserving the input order.
+
+    The result list is re-sorted to match the order of ``ps_numbers`` so
+    callers (e.g. symptom search) can control likelihood ranking.
+
+    Args:
+        ps_numbers: Ordered list of PS number strings.
+
+    Returns:
+        List of part dicts in the same order as ``ps_numbers``.
+        Parts not found in the DB are silently omitted.
+    """
     if not ps_numbers:
         return []
     placeholders = ",".join("?" * len(ps_numbers))
@@ -310,6 +402,19 @@ def save_conversation(
     title: str,
     messages: list[dict],
 ) -> None:
+    """Upsert a conversation and atomically replace its messages.
+
+    The conversation row is inserted or updated (title + updated_at).
+    All existing messages for the conversation are deleted and re-inserted
+    from the ``messages`` list — this keeps stored state in sync with what
+    the client sends, regardless of prior saves.
+
+    Args:
+        conversation_id: Client-generated UUID string.
+        user_id: Opaque user identifier.
+        title: Display title (e.g. first user message, truncated).
+        messages: List of dicts with keys: role, content, rich_cards.
+    """
     now = datetime.now(timezone.utc).isoformat()
     with get_db_connection() as conn:
         conn.execute(
@@ -338,6 +443,15 @@ def save_conversation(
 
 
 def get_conversations(user_id: str) -> list[dict]:
+    """Return conversation summaries for a user, most-recently-updated first.
+
+    Args:
+        user_id: Opaque user identifier.
+
+    Returns:
+        Up to 50 conversation dicts with keys: id, title, created_at,
+        updated_at, message_count.
+    """
     with get_db_connection() as conn:
         rows = conn.execute(
             """SELECT c.id, c.title, c.created_at, c.updated_at,
@@ -354,6 +468,17 @@ def get_conversations(user_id: str) -> list[dict]:
 
 
 def get_conversation_messages(conversation_id: str) -> list[dict]:
+    """Return all messages for a conversation in chronological order.
+
+    rich_cards is stored as a JSON string and deserialised to a list here
+    so callers receive native Python objects.
+
+    Args:
+        conversation_id: Conversation UUID string.
+
+    Returns:
+        List of message dicts with keys: id, role, content, rich_cards, created_at.
+    """
     with get_db_connection() as conn:
         rows = conn.execute(
             """SELECT id, role, content, rich_cards, created_at
@@ -392,7 +517,18 @@ def get_all_symptoms_for_indexing() -> list[dict]:
 
 
 def cache_scraped_part(part_data: dict) -> None:
-    """Cache a scraped part into SQLite so subsequent lookups are instant."""
+    """Cache a scraped part into SQLite so subsequent lookups are instant.
+
+    Uses INSERT OR REPLACE so repeated scrapes of the same PS number update
+    the record rather than raising a duplicate key error.
+    Silently no-ops if part_data has no ps_number.
+
+    Args:
+        part_data: Part dict as returned by scraper.scrape_part(). Keys used:
+                   ps_number, mfr_number, name, appliance_type, category,
+                   price, in_stock, description, install_steps, image_url,
+                   partselect_url.
+    """
     if not part_data.get("ps_number"):
         return
     with get_db_connection() as conn:

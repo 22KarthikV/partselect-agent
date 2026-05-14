@@ -22,7 +22,14 @@ _collection = None
 _ready: bool = False
 
 
-def _get_embedding_function():
+def _get_embedding_function() -> object:
+    """Return a ChromaDB SentenceTransformer embedding function.
+
+    Imported lazily so the heavy sentence-transformers package is only loaded
+    when ChromaDB is actually used (avoids import-time cost on cold start).
+    Uses the 'all-MiniLM-L6-v2' model: 384-dimension embeddings, ~80 MB on disk,
+    good balance of quality and speed for semantic part/symptom search.
+    """
     from chromadb.utils import embedding_functions
     return embedding_functions.SentenceTransformerEmbeddingFunction(
         model_name=EMBEDDING_MODEL
@@ -170,7 +177,16 @@ def query_vector_store(
 
 
 def upsert_part(part: dict) -> None:
-    """Add or update a single part document (used after live scraping)."""
+    """Add or update a single part document in ChromaDB after a live scrape.
+
+    Called by tool handlers after caching a newly-scraped part so semantic search
+    picks it up immediately without waiting for a full re-index at next startup.
+
+    Args:
+        part: Part dict with at least ps_number, name, description,
+              appliance_type, and category keys.
+              Silently no-ops if the vector store is not ready.
+    """
     if not _ready or _collection is None:
         return
     try:
@@ -193,10 +209,16 @@ def upsert_part(part: dict) -> None:
 
 
 def is_ready() -> bool:
+    """Return True if the vector store was successfully initialised and is queryable."""
     return _ready
 
 
 def get_status() -> str:
+    """Return a human-readable status string for the /api/health endpoint.
+
+    Returns "not_ready" if initialisation failed, or "ready (N documents)"
+    on success, where N is the live document count from ChromaDB.
+    """
     if not _ready or _collection is None:
         return "not_ready"
     try:

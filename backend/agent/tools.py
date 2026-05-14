@@ -43,6 +43,11 @@ _LIKELIHOOD_MAP = {0: "most_likely", 1: "possible", 2: "less_likely"}
 
 
 def _likelihood(index: int) -> str:
+    """Convert a 0-based rank index to a human-readable likelihood label.
+
+    0 → "most_likely", 1 → "possible", 2+ → "less_likely".
+    Used to annotate diagnosed parts in symptom search results.
+    """
     return _LIKELIHOOD_MAP.get(index, "less_likely")
 
 
@@ -55,6 +60,11 @@ _ALLOWED_APPLIANCE_TYPES = {"refrigerator", "dishwasher"}
 
 
 def _appliance_scope_error(part_number: str, appliance_type: str, part_name: str = "") -> dict:
+    """Build a standardised out-of-scope error dict for parts outside the
+    refrigerator/dishwasher scope (e.g. washing machine or oven parts).
+
+    The orchestrator passes this dict's 'detail' field through to the user.
+    """
     label = part_name or part_number
     type_display = appliance_type.replace("-", " ").title() if appliance_type != "unknown" else "an unsupported appliance"
     return {
@@ -69,7 +79,21 @@ def _appliance_scope_error(part_number: str, appliance_type: str, part_name: str
 
 
 async def get_part_details(part_number: str) -> dict:
-    """Look up a part by PS number or manufacturer number."""
+    """Look up a part by PS number or manufacturer number.
+
+    Three-tier lookup strategy:
+      1. SQLite seed/cache — instant, covers the 230 pre-loaded parts.
+      2. Live PartSelect scraper — for PS-format numbers not in the DB.
+      3. not_found error — returned if both layers fail.
+
+    Args:
+        part_number: PS number (e.g. "PS11752778") or manufacturer number
+                     (e.g. "WPW10321304"). Case-insensitive.
+
+    Returns:
+        Part dict on success, or a dict with ``"error": "not_found"`` or
+        ``"error": "out_of_scope"`` on failure.
+    """
     # Layer 1: SQLite seed/cache
     part = get_part_by_number(part_number)
     if part is not None:
@@ -108,7 +132,17 @@ async def get_part_details(part_number: str) -> dict:
 
 
 async def check_compatibility(part_number: str, model_number: str) -> dict:
-    """Check whether a part is compatible with a given appliance model."""
+    """Check whether a part is compatible with a given appliance model.
+
+    Args:
+        part_number: PS number or manufacturer number of the part.
+        model_number: Appliance model number (e.g. "WDT780SAEM1").
+
+    Returns:
+        Dict with keys: part_number, model_number, is_compatible (bool),
+        explanation (human-readable reason), part_name, model_description,
+        alternative_parts (list of same-category parts if not compatible).
+    """
     part = get_part_by_number(part_number)
     if part is None:
         return {
@@ -148,7 +182,20 @@ async def check_compatibility(part_number: str, model_number: str) -> dict:
 
 
 async def get_installation_guide(part_number: str) -> dict:
-    """Return step-by-step installation instructions for a part."""
+    """Return step-by-step installation instructions for a part.
+
+    If the part has no stored install_steps, a generic five-step guide is
+    generated from the part name and manufacturer number.
+    Estimated time and required tools are inferred by scanning step text for
+    time references (e.g. "30 minutes") and tool keywords (e.g. "screwdriver").
+
+    Args:
+        part_number: PS or manufacturer number.
+
+    Returns:
+        Dict with keys: part_number, part_name, steps (list[str]),
+        estimated_time (str), tools_needed (list[str]).
+    """
     part = get_part_by_number(part_number)
     if part is None:
         return {
@@ -210,7 +257,22 @@ async def get_installation_guide(part_number: str) -> dict:
 
 
 async def search_parts_by_symptom(appliance_type: str, symptom: str) -> dict:
-    """Find likely parts based on a symptom description."""
+    """Find likely parts based on a symptom description.
+
+    Three-tier search strategy (most to least precise):
+      1. ChromaDB semantic search — embedding similarity against the symptom corpus.
+      2. SQLite keyword search on the symptoms table.
+      3. SQLite keyword search on the parts table (broad fallback).
+
+    Args:
+        appliance_type: "refrigerator" or "dishwasher". Defaults to
+                        "refrigerator" if an unrecognised value is passed.
+        symptom: Free-text description of the problem (e.g. "ice maker not working").
+
+    Returns:
+        Dict with keys: appliance_type, symptom, diagnosed_parts (list with
+        likelihood + reason per part), repair_guidance (str), safety_note (str).
+    """
     appliance_type = appliance_type.lower().strip()
     if appliance_type not in ("refrigerator", "dishwasher"):
         appliance_type = "refrigerator"
@@ -303,6 +365,11 @@ async def search_parts_by_symptom(appliance_type: str, symptom: str) -> dict:
 
 
 def _part_reason(part: dict, index: int, symptom: dict) -> str:
+    """Return a one-sentence human-readable reason why this part is a likely cause.
+
+    The reason is keyed purely on the 0-based rank index (most_likely / possible /
+    less_likely) because PartSelect's symptom data does not include per-part explanations.
+    """
     descriptions = {
         0: f"{part['name']} is the most common cause of this problem and should be checked first.",
         1: f"{part['name']} is another possible cause — check this if replacing the first part does not solve the issue.",
@@ -312,7 +379,21 @@ def _part_reason(part: dict, index: int, symptom: dict) -> str:
 
 
 async def get_parts_for_model_tool(model_number: str, category: str | None = None) -> dict:
-    """Return compatible parts for a given model, optionally filtered by category."""
+    """Return compatible parts for a given model, optionally filtered by category.
+
+    Two-tier lookup:
+      1. SQLite JOIN on the compatibility table — covers the 27 pre-loaded models.
+      2. Live model-page scrape via Firecrawl — if SQLite returns nothing, scrapes
+         the PartSelect model page, extracts PS numbers, and scrapes/caches each part.
+
+    Args:
+        model_number: Appliance model number (e.g. "WDT780SAEM1").
+        category: Optional category slug filter (e.g. "ice-maker", "pump").
+
+    Returns:
+        Dict with keys: model_number, brand, appliance_type, description,
+        parts (list[dict]), total_count (int).
+    """
     model = get_model_info(model_number)
     parts = get_parts_for_model(model_number, category)
 
@@ -349,7 +430,20 @@ async def get_parts_for_model_tool(model_number: str, category: str | None = Non
 
 
 async def get_order_status(order_id: str) -> dict:
-    """Look up an order by ID and return its status."""
+    """Look up an order by ID and return its status.
+
+    Args:
+        order_id: Numeric order ID string (e.g. "12345"). Whitespace is stripped.
+
+    Returns:
+        Order dict with keys: order_id, status, estimated_delivery,
+        tracking_number, items. Returns a not_found dict with customer
+        support contact details if the order ID is unknown.
+
+    Note:
+        Orders are currently served from a static mock dataset in database.py
+        for demo purposes.
+    """
     order = get_order_by_id(order_id.strip())
     if order is None:
         return {
@@ -368,7 +462,18 @@ async def get_order_status(order_id: str) -> dict:
 
 
 async def search_parts(query: str, appliance_type: str | None = None) -> dict:
-    """Search for parts by keyword, optionally filtered by appliance type."""
+    """Search for parts by keyword, optionally filtered by appliance type.
+
+    Falls back to a live Firecrawl search against PartSelect.com when the
+    local database returns no matches, caching results for future requests.
+
+    Args:
+        query: Free-text keywords or part description.
+        appliance_type: Optional "refrigerator" or "dishwasher" filter.
+
+    Returns:
+        Dict with keys: query (str), parts (list[dict]), total_count (int).
+    """
     parts = search_parts_by_keywords(query, appliance_type)
 
     # Live scraping fallback: no local results — search PartSelect directly via Firecrawl.

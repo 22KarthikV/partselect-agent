@@ -2,6 +2,12 @@
 
 An intelligent chat agent for the PartSelect.com e-commerce platform, scoped to **Refrigerator and Dishwasher parts only**. It handles product discovery, compatibility checking, installation guidance, symptom-based troubleshooting, and order lookup — all through a polished streaming chat UI that matches PartSelect's teal branding.
 
+## Live Demo
+
+**[https://partselect-agent-ten.vercel.app/](https://partselect-agent-ten.vercel.app/)**
+
+Backend: Railway (FastAPI + ChromaDB) · Frontend: Vercel (Next.js)
+
 ## What makes it impressive
 
 - **3-layer data architecture** — SQLite seed database (instant, zero-latency) → live PartSelect scraper (real-time enrichment for unknown parts) → ChromaDB semantic search (symptom matching via local embeddings)
@@ -35,7 +41,7 @@ pip install -r requirements.txt
 cp .env.example .env
 # Edit .env — set ANTHROPIC_API_KEY (or GEMINI_API_KEY + LLM_PROVIDER=gemini)
 
-# Seed the database and vector store (~60 parts, 17 models, 84 ChromaDB docs)
+# Seed the database and vector store (~230 parts, 27 models, 2335 compatibility pairs, 12 symptoms)
 python data/seed.py
 
 # Start the API server
@@ -95,7 +101,7 @@ Agent Orchestrator (Claude tool_use loop, max 5 rounds)
      │                            Layer 2: Live scraper (httpx + BS4, on DB miss)
      │
      ├── search_parts_by_symptom ► Layer 3: ChromaDB semantic search
-     │                             (84 docs, all-MiniLM-L6-v2, local embeddings)
+     │                             (all-MiniLM-L6-v2, local embeddings)
      │
      ├── check_compatibility ───► SQLite compatibility table
      ├── get_installation_guide ► SQLite install_steps JSON
@@ -116,6 +122,16 @@ done:         { type }                         → finalises stream
 
 ---
 
+## Key Design Decisions
+
+- **SQLite instead of Postgres** — zero operational overhead for an MVP; WAL journal mode allows concurrent reads without blocking writes; the entire database is a single portable file that deploys as part of the container image.
+- **Local ChromaDB instead of a managed vector service** — eliminates network round-trips for embedding lookups (~80 MB on disk), keeps the stack offline-capable, and avoids vendor lock-in for what is currently a small corpus.
+- **SSE instead of WebSockets** — the stream is strictly unidirectional (server → client); SSE requires no upgrade handshake, traverses Vercel Edge with zero configuration, and degrades gracefully to long-polling in restricted network environments.
+- **Domain scoping enforced at the tool layer, not only in the system prompt** — LLMs can be coaxed into ignoring prompt-level instructions; encoding the refrigerator/dishwasher scope inside each tool handler makes out-of-domain refusals deterministic and tamper-resistant.
+- **Conversation history is client-sent each turn, not server-stored** — the backend remains fully stateless, which means it scales horizontally without session affinity, requires no per-user storage, and simplifies deployment on serverless runtimes.
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -124,7 +140,7 @@ done:         { type }                         → finalises stream
 | Backend | FastAPI (Python 3.11), Uvicorn |
 | Primary LLM | Claude Sonnet via Anthropic `tool_use` API |
 | Fallback LLM | Gemini 2.5 Flash via `google-genai` SDK |
-| Data layer 1 | SQLite (seed data — 60 parts, 17 models, 12 symptoms) |
+| Data layer 1 | SQLite (seed data — 230 parts, 27 models, 2335 compatibility pairs, 12 symptoms) |
 | Data layer 2 | httpx + BeautifulSoup4 (live PartSelect scraper) |
 | Data layer 3 | ChromaDB + sentence-transformers `all-MiniLM-L6-v2` |
 | Validation | Pydantic v2 |
@@ -175,8 +191,8 @@ PartSelect Agent/
 │   │   └── prompts.py           # System prompt (scope guard, tool directives)
 │   ├── data/
 │   │   ├── database.py          # SQLite queries (partselect.db)
-│   │   ├── vector_store.py      # ChromaDB semantic search (84 docs)
-│   │   └── seed_data.json       # 60 parts, 17 models, 12 symptoms
+│   │   ├── vector_store.py      # ChromaDB semantic search (all-MiniLM-L6-v2)
+│   │   └── seed_data.json       # 230 parts, 27 models, 2335 compatibility pairs, 12 symptoms
 │   └── models/schemas.py        # Pydantic models + input validation
 │
 └── frontend/

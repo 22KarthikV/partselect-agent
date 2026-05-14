@@ -20,6 +20,15 @@ SEED_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "seed_data.
 
 
 def seed() -> None:
+    """Load seed_data.json and populate all SQLite tables.
+
+    Reads parts, models, compatibility pairs, and symptoms from the JSON file
+    and inserts them using INSERT OR REPLACE so the script is safe to re-run
+    (idempotent for parts and models; symptoms are appended each run — clear
+    the DB first if re-seeding from scratch).
+
+    Prints a summary of row counts on completion.
+    """
     with open(SEED_FILE, encoding="utf-8") as f:
         data = json.load(f)
 
@@ -74,6 +83,9 @@ def seed() -> None:
                 )
                 compat_count += 1
             except Exception:
+                # Skip rows where the referenced ps_number or model_number
+                # does not exist yet (foreign-key violation). This can occur
+                # when seed data references a part that failed its own INSERT.
                 pass
 
         for s in symptoms:

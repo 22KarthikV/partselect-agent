@@ -1,3 +1,18 @@
+"""FastAPI application entry point for the PartSelect AI Agent backend.
+
+Defines all HTTP endpoints:
+  GET  /api/health                              — liveness + dependency status
+  GET  /api/stats                               — live catalog counts
+  GET  /api/part/{part_number}                  — single-part lookup
+  GET  /api/parts/search                        — keyword part search
+  POST /api/chat                                — streaming SSE chat (main agent entry)
+  GET  /api/conversations                       — list saved conversations for a user
+  GET  /api/conversations/{id}/messages         — load a conversation's messages
+  POST /api/conversations/{id}/save             — persist a conversation
+
+The FastAPI lifespan handler (startup) creates SQLite tables and
+initialises the ChromaDB vector store off the event loop.
+"""
 from __future__ import annotations
 
 import asyncio
@@ -43,6 +58,16 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """FastAPI lifespan handler — runs once at startup and once at shutdown.
+
+    Startup:
+      1. Creates all SQLite tables (idempotent — safe to run on every boot).
+      2. Initialises the ChromaDB vector store in a thread-pool executor because
+         the sentence-transformer model load is CPU-bound and would block the
+         async event loop if called directly.
+
+    The ``yield`` separates startup (above) from shutdown (below — nothing to do).
+    """
     # Create SQLite tables
     with get_db_connection() as conn:
         create_tables(conn)
@@ -85,6 +110,11 @@ app.add_middleware(
 
 @app.get("/api/health", response_model=HealthResponse)
 async def health_check():
+    """Return liveness status and dependency health for ops monitoring.
+
+    Probes SQLite with a live query so a stale connection is detected.
+    Vector store status is delegated to vector_store.get_status().
+    """
     try:
         with get_db_connection() as conn:
             conn.execute("SELECT COUNT(*) FROM parts").fetchone()
@@ -134,6 +164,12 @@ async def catalog_stats():
 async def get_part(
     part_number: str = Path(..., min_length=1, max_length=50, pattern=r"^[A-Za-z0-9\-]+$"),
 ):
+    """Fetch a single part by PS number or manufacturer number.
+
+    Delegates to the agent tool layer (get_part_details) which applies the
+    three-tier lookup: SQLite cache → live scraper → not-found error.
+    Returns 404 if the part cannot be located.
+    """
     result = await get_part_details(part_number)
     if "error" in result and result["error"] == "not_found":
         raise HTTPException(status_code=404, detail=result["detail"])
@@ -155,6 +191,11 @@ async def search_parts_endpoint(
     q: str = Query(..., min_length=1, max_length=200),
     appliance_type: ApplianceType | None = Query(default=None),
 ):
+    """Keyword search over the parts catalog, optionally filtered by appliance type.
+
+    Convenience REST endpoint wrapping the agent's search_parts tool.
+    Falls back to live Firecrawl scraping when the local DB returns no matches.
+    """
     result = await search_parts(q, appliance_type.value if appliance_type else None)
     return result
 
@@ -199,6 +240,7 @@ _CONV_ID_PATTERN = r"^[A-Za-z0-9\-_]+$"
 async def list_conversations(
     user_id: str = Query(..., min_length=1, max_length=64, pattern=_CONV_ID_PATTERN),
 ):
+    """Return conversation summaries for a user, ordered by most-recently updated."""
     return get_conversations(user_id)
 
 
@@ -209,6 +251,7 @@ async def list_conversations(
 async def load_conversation_messages(
     conversation_id: str = Path(..., min_length=1, max_length=64, pattern=_CONV_ID_PATTERN),
 ):
+    """Return the full message list for a conversation, ordered chronologically."""
     return get_conversation_messages(conversation_id)
 
 
@@ -217,6 +260,12 @@ async def save_conv(
     conversation_id: str = Path(..., min_length=1, max_length=64, pattern=_CONV_ID_PATTERN),
     request: SaveConversationRequest = Body(...),
 ):
+    """Upsert a conversation and replace its message list atomically.
+
+    Called by the frontend on session close or explicit save. Uses INSERT OR REPLACE
+    for the conversation row and DELETE + re-INSERT for messages so the stored state
+    exactly mirrors what the client sends, regardless of prior saves.
+    """
     msgs = [{"role": m.role, "content": m.content, "rich_cards": m.rich_cards} for m in request.messages]
     save_conversation(conversation_id, request.user_id, request.title, msgs)
     return {"ok": True}
@@ -229,6 +278,12 @@ async def save_conv(
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
+    """Catch-all handler for unhandled exceptions.
+
+    Returns a generic 500 JSON response so the client always receives a
+    structured ErrorResponse rather than an HTML traceback or empty body.
+    The full exception is logged server-side for debugging.
+    """
     logger.error("Unhandled exception: %s", exc, exc_info=True)
     return JSONResponse(
         status_code=500,
