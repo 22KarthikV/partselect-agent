@@ -6,9 +6,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Install dependencies first for better layer caching
+# Install dependencies first for better layer caching.
+# Pre-install CPU-only torch BEFORE requirements.txt so that
+# sentence-transformers picks it up instead of pulling the default
+# CUDA build (~5GB of nvidia-* libs we don't need on a CPU machine).
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu torch && \
     pip install --no-cache-dir -r requirements.txt
 
 # Bake the sentence-transformers model into the image (~90MB) so the
