@@ -72,7 +72,7 @@ export default function MessageList({ messages, isStreaming, streamingLabel, sug
       style={{ background: "var(--color-bg)" }}
     >
       {showWelcome ? (
-        <div className="flex flex-col items-center justify-center min-h-full px-6 py-12 text-center gap-8">
+        <div className="flex flex-col items-center justify-center min-h-full px-4 sm:px-6 py-8 sm:py-12 text-center gap-6 sm:gap-8">
 
           {/* Ambient orb + PS mark */}
           <div className="flex flex-col items-center gap-5">
@@ -112,7 +112,7 @@ export default function MessageList({ messages, isStreaming, streamingLabel, sug
             {/* Headlines */}
             <div className="stagger-1 animate-slide-up">
               <h2
-                className="text-3xl font-bold mb-2 leading-tight"
+                className="text-2xl sm:text-3xl font-bold mb-2 leading-tight"
                 style={{
                   fontFamily: "var(--font-display)",
                   fontStyle: "italic",
@@ -226,7 +226,7 @@ export default function MessageList({ messages, isStreaming, streamingLabel, sug
 
           {/* Follow-up suggestion chips */}
           {!isStreaming && suggestions.length > 0 && (
-            <div className="px-4 pt-2 pb-1">
+            <div className="px-3 sm:px-4 pt-2 pb-1">
               <p className="text-xs font-medium mb-2" style={{ color: "var(--color-text-4)" }}>
                 Suggested follow-ups
               </p>

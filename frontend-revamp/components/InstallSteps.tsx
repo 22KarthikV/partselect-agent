@@ -24,7 +24,7 @@ export default function InstallSteps({ data }: InstallStepsProps) {
   const progressPct = totalSteps > 0 ? Math.round((doneCount / totalSteps) * 100) : 0;
 
   return (
-    <div className="ps-card max-w-sm animate-slide-up">
+    <div className="ps-card w-full sm:max-w-sm animate-slide-up">
       {/* Amber top accent */}
       <div style={{ height: "3px", background: "linear-gradient(90deg, #d4a853 0%, #e8c070 50%, transparent 100%)" }} />
 

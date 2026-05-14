@@ -30,7 +30,7 @@ export default function ProductCard({ data }: ProductCardProps) {
 
   return (
     <div
-      className="ps-card max-w-sm animate-slide-up"
+      className="ps-card w-full sm:max-w-sm animate-slide-up"
       style={{
         transform: hovered ? "translateY(-3px)" : "translateY(0)",
         boxShadow: hovered

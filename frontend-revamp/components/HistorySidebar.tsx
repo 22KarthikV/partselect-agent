@@ -87,7 +87,7 @@ export default function HistorySidebar({ userId, isOpen, onClose, onSelect }: Hi
       <aside
         className="fixed top-0 left-0 h-full z-50 flex flex-col"
         style={{
-          width: "300px",
+          width: "min(300px, 85vw)",
           background: "rgba(13,11,18,0.98)",
           borderRight: "1px solid rgba(212,168,83,0.12)",
           boxShadow: "4px 0 32px rgba(0,0,0,0.5)",
@@ -110,7 +110,7 @@ export default function HistorySidebar({ userId, isOpen, onClose, onSelect }: Hi
           </div>
           <button
             onClick={onClose}
-            className="w-7 h-7 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-150"
+            className="w-10 h-10 sm:w-7 sm:h-7 rounded-lg flex items-center justify-center cursor-pointer transition-all duration-150"
             style={{ color: "var(--color-text-3)" }}
             onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-1)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)"; }}
             onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "var(--color-text-3)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}

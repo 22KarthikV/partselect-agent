@@ -28,7 +28,7 @@ export default function CompatibilityBadge({ data }: CompatibilityBadgeProps) {
 
   return (
     <div
-      className="ps-card max-w-sm"
+      className="ps-card w-full sm:max-w-sm"
       style={{
         borderLeft: `3px solid ${isOk ? "var(--color-success)" : "var(--color-danger)"}`,
       }}

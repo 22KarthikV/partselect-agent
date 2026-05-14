@@ -44,7 +44,7 @@ export default function OrderStatusCard({ data }: OrderStatusCardProps) {
   if (data.status === "not_found") {
     return (
       <div
-        className="rounded-2xl px-4 py-3 max-w-sm"
+        className="rounded-2xl px-4 py-3 w-full sm:max-w-sm"
         style={{
           background: cfg.bg,
           border: `1px solid ${cfg.border}`,
@@ -63,7 +63,7 @@ export default function OrderStatusCard({ data }: OrderStatusCardProps) {
 
   return (
     <div
-      className="rounded-2xl overflow-hidden max-w-sm"
+      className="rounded-2xl overflow-hidden w-full sm:max-w-sm"
       style={{
         background: "rgba(26,24,32,0.82)",
         backdropFilter: "blur(12px)",

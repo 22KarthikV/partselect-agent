@@ -48,7 +48,7 @@ export default function InputBar({
 
   return (
     <div
-      className="flex-shrink-0 px-4 py-3"
+      className="flex-shrink-0 px-3 sm:px-4 py-2.5 sm:py-3"
       style={{
         background: "rgba(10,9,16,0.94)",
         borderTop: "1px solid rgba(212,168,83,0.1)",
@@ -115,7 +115,7 @@ export default function InputBar({
         <button
           onClick={() => onSend()}
           disabled={!canSend}
-          className="flex-shrink-0 w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-200 cursor-pointer press-scale"
+          className="flex-shrink-0 w-10 h-10 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center transition-all duration-200 cursor-pointer press-scale"
           style={{
             background: canSend
               ? "linear-gradient(135deg, #d4a853 0%, #e8c070 60%, #c9993a 100%)"
@@ -145,8 +145,8 @@ export default function InputBar({
         </button>
       </div>
 
-      {/* Keyboard hint */}
-      <p className="text-center text-xs mt-2" style={{ color: "var(--color-text-4)" }}>
+      {/* Keyboard hint — desktop only */}
+      <p className="hidden sm:block text-center text-xs mt-2" style={{ color: "var(--color-text-4)" }}>
         <kbd
           className="font-mono px-1.5 py-0.5 rounded text-xs"
           style={{

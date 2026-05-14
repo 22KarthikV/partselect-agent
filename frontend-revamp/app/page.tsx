@@ -125,7 +125,7 @@ export default function Home() {
     <div className="flex flex-col h-full" style={{ backgroundColor: "var(--color-bg)" }}>
       {/* ── Header — dark glass bar ── */}
       <header
-        className="flex-shrink-0 flex items-center gap-4 px-5"
+        className="flex-shrink-0 flex items-center gap-2 sm:gap-4 px-3 sm:px-5"
         style={{
           height: "52px",
           background: "rgba(13,11,18,0.88)",
@@ -137,7 +137,7 @@ export default function Home() {
         }}
       >
         {/* Brand mark */}
-        <div className="flex items-center gap-3 flex-shrink-0">
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
           <div
             className="w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs tracking-wide select-none"
             style={{
@@ -178,7 +178,7 @@ export default function Home() {
         </div>
 
         {/* Divider */}
-        <div className="h-4 w-px flex-shrink-0" style={{ background: "rgba(255,255,255,0.1)" }} />
+        <div className="hidden sm:block h-4 w-px flex-shrink-0" style={{ background: "rgba(255,255,255,0.1)" }} />
 
         {/* Status */}
         <div className="flex items-center gap-2">
@@ -186,11 +186,11 @@ export default function Home() {
             className="status-pulse w-1.5 h-1.5 rounded-full flex-shrink-0"
             style={{ background: "#4ade80" }}
           />
-          <span className="text-sm font-medium" style={{ color: "var(--color-text-2)" }}>
+          <span className="hidden sm:inline text-sm font-medium" style={{ color: "var(--color-text-2)" }}>
             Online
           </span>
           <span
-            className="hidden sm:inline-block text-xs px-2 py-0.5 rounded-full font-medium"
+            className="hidden md:inline-block text-xs px-2 py-0.5 rounded-full font-medium"
             style={{
               background: "rgba(255,255,255,0.14)",
               color: "var(--color-text-1)",
@@ -220,17 +220,17 @@ export default function Home() {
                 }}
               />
               <span>{stats.parts.toLocaleString()} parts</span>
-              <span style={{ opacity: 0.5 }}>·</span>
+              <span className="hidden md:inline" style={{ opacity: 0.5 }}>·</span>
               {/* Fridge */}
-              <span style={{ opacity: 0.75 }}>
+              <span className="hidden md:inline" style={{ opacity: 0.75 }}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="currentColor" className="w-3 h-3 inline -mt-0.5 mr-0.5">
                   <path fillRule="evenodd" d="M2.5 1A1.5 1.5 0 001 2.5v7A1.5 1.5 0 002.5 11h7A1.5 1.5 0 0011 9.5v-7A1.5 1.5 0 009.5 1h-7zM2 5h8v4.5a.5.5 0 01-.5.5h-7a.5.5 0 01-.5-.5V5zm0-2.5A.5.5 0 012.5 2h7a.5.5 0 01.5.5V4H2V2.5z" clipRule="evenodd" />
                 </svg>
                 {stats.refrigerator_parts}
               </span>
-              <span style={{ opacity: 0.4 }}>/</span>
+              <span className="hidden md:inline" style={{ opacity: 0.4 }}>/</span>
               {/* Dishwasher */}
-              <span style={{ opacity: 0.75 }}>
+              <span className="hidden md:inline" style={{ opacity: 0.75 }}>
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 12" fill="currentColor" className="w-3 h-3 inline -mt-0.5 mr-0.5">
                   <path fillRule="evenodd" d="M1 2.5A1.5 1.5 0 012.5 1h7A1.5 1.5 0 0111 2.5v7A1.5 1.5 0 019.5 11h-7A1.5 1.5 0 011 9.5v-7zM6 3a3 3 0 100 6A3 3 0 006 3zm0 1a2 2 0 110 4 2 2 0 010-4z" clipRule="evenodd" />
                 </svg>
@@ -243,7 +243,7 @@ export default function Home() {
         {/* History button */}
         <button
           onClick={() => setShowHistory(true)}
-          className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200"
+          className="ml-auto flex items-center justify-center sm:justify-start gap-1.5 w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200"
           style={{
             background: "rgba(255,255,255,0.05)",
             color: "var(--color-text-2)",
@@ -258,17 +258,18 @@ export default function Home() {
             (e.currentTarget as HTMLElement).style.color = "var(--color-text-2)";
           }}
           title="View chat history"
+          aria-label="View chat history"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 sm:w-3.5 sm:h-3.5">
             <path fillRule="evenodd" d="M1 8a7 7 0 1114 0A7 7 0 011 8zm7.75-4.25a.75.75 0 00-1.5 0V8c0 .414.336.75.75.75h3.25a.75.75 0 000-1.5h-2.5V3.75z" clipRule="evenodd" />
           </svg>
-          History
+          <span className="hidden sm:inline">History</span>
         </button>
 
         {/* New Chat button */}
         <button
           onClick={() => { setLoadedConv(null); setChatKey((k) => k + 1); setDemoTrigger(null); }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200"
+          className="flex items-center justify-center sm:justify-start gap-1.5 w-9 h-9 sm:w-auto sm:h-auto sm:px-3 sm:py-1.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200"
           style={{
             background: "rgba(255,255,255,0.05)",
             color: "var(--color-text-2)",
@@ -283,18 +284,19 @@ export default function Home() {
             (e.currentTarget as HTMLElement).style.color = "var(--color-text-2)";
           }}
           title="Start a new conversation"
+          aria-label="Start a new conversation"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 sm:w-3.5 sm:h-3.5">
             <path d="M11.5 1A1.5 1.5 0 0113 2.5v1A1.5 1.5 0 0111.5 5h-7A1.5 1.5 0 013 3.5v-1A1.5 1.5 0 014.5 1h7zM3 6.5A1.5 1.5 0 014.5 5h7A1.5 1.5 0 0113 6.5v1A1.5 1.5 0 0111.5 9h-7A1.5 1.5 0 013 7.5v-1zM4.5 10A1.5 1.5 0 003 11.5v1A1.5 1.5 0 004.5 14h7a1.5 1.5 0 001.5-1.5v-1A1.5 1.5 0 0011.5 10h-7z" />
           </svg>
-          New Chat
+          <span className="hidden sm:inline">New Chat</span>
         </button>
 
         {/* Demo dropdown */}
         <div className="relative" ref={demoMenuRef}>
           <button
             onClick={() => setShowDemoMenu((v) => !v)}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200"
+            className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3.5 h-9 sm:h-auto sm:py-1.5 rounded-lg text-sm font-medium cursor-pointer transition-all duration-200"
             style={{
               background: showDemoMenu
                 ? "rgba(212,168,83,0.18)"
@@ -315,10 +317,10 @@ export default function Home() {
             aria-expanded={showDemoMenu}
             aria-haspopup="true"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5 opacity-80">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 sm:w-3.5 sm:h-3.5 opacity-80">
               <path d="M3 3.5A1.5 1.5 0 014.5 2h7A1.5 1.5 0 0113 3.5v9a1.5 1.5 0 01-1.5 1.5h-7A1.5 1.5 0 013 12.5v-9zM5.5 5.75a.75.75 0 000 1.5H8a.75.75 0 000-1.5H5.5zm0 2.75a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5H5.5z" />
             </svg>
-            Try a Demo
+            <span className="hidden sm:inline">Try a </span>Demo
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"
@@ -332,7 +334,7 @@ export default function Home() {
 
           {showDemoMenu && (
             <div
-              className="absolute top-full right-0 mt-2 w-72 rounded-2xl overflow-hidden z-50 animate-slide-up"
+              className="absolute top-full right-0 mt-2 w-72 max-w-[calc(100vw-1.5rem)] rounded-2xl overflow-hidden z-50 animate-slide-up"
               style={{
                 background: "rgba(18,16,26,0.97)",
                 border: "1px solid rgba(212,168,83,0.18)",

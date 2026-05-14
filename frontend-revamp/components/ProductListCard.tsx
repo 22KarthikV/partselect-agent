@@ -16,7 +16,7 @@ export default function ProductListCard({ data }: ProductListCardProps) {
 
   return (
     <div
-      className="rounded-2xl overflow-hidden max-w-sm animate-slide-up"
+      className="rounded-2xl overflow-hidden w-full sm:max-w-sm animate-slide-up"
       style={{
         background: "rgba(26,24,32,0.82)",
         backdropFilter: "blur(12px)",

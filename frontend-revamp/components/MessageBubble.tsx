@@ -67,8 +67,8 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
 
   if (isUser) {
     return (
-      <div className="flex justify-end px-4 py-1.5 msg-in">
-        <div className="max-w-[76%]">
+      <div className="flex justify-end px-3 sm:px-4 py-1.5 msg-in">
+        <div className="max-w-[85%] sm:max-w-[76%]">
           <div
             className="px-4 py-3 text-sm leading-relaxed"
             style={{
@@ -88,7 +88,7 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
 
   // Assistant message
   return (
-    <div className="flex items-start gap-2.5 px-4 py-1.5 msg-in">
+    <div className="flex items-start gap-2 sm:gap-2.5 px-3 sm:px-4 py-1.5 msg-in">
       <PSAvatar />
 
       <div className="flex-1 min-w-0 space-y-2.5">
