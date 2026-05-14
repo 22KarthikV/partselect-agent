@@ -102,7 +102,7 @@ export default function InputBar({
           disabled={disabled}
           placeholder={placeholder}
           rows={1}
-          className="flex-1 resize-none bg-transparent text-sm leading-6 outline-none disabled:opacity-40"
+          className="flex-1 resize-none bg-transparent text-base sm:text-sm leading-6 outline-none disabled:opacity-40"
           style={{
             color: "var(--color-text-1)",
             minHeight: "24px",
