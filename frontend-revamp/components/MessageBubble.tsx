@@ -121,6 +121,8 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
                   a: ({ ...props }) => (
                     <a
                       {...props}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       style={{ color: "var(--color-amber)", textDecoration: "none" }}
                       onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = "underline"; }}
                       onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.textDecoration = "none"; }}
