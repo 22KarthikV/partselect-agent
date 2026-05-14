@@ -57,7 +57,7 @@ curl http://localhost:8000/api/health
 ### 2. Frontend
 
 ```bash
-cd frontend
+cd frontend-revamp
 
 npm install
 
@@ -75,11 +75,13 @@ Open **http://localhost:3000**
 
 Use the **"Try a Demo"** button in the header to auto-send any of these, or type them manually:
 
-| # | Query | Expected response |
-|---|-------|-------------------|
-| 1 | `The ice maker on my Whirlpool fridge is not working. How can I fix it?` | Symptom diagnosis → ranked parts with likelihood ratings |
-| 2 | `Is part PS11752778 compatible with my WDT780SAEM1?` | Compatibility badge (✅/❌) with explanation |
-| 3 | `How can I install part number PS11752778?` | Step-by-step installation card with estimated time |
+| # | Scenario | Query | Expected response |
+|---|----------|-------|-------------------|
+| 1 | Ice maker diagnosis | `The ice maker on my Whirlpool fridge is not working. How can I fix it?` | Symptom diagnosis → ranked parts with likelihood ratings |
+| 2 | Compatibility check | `Is part PS11752778 compatible with my WDT780SAEM1?` | Compatibility badge (✅/❌) with explanation |
+| 3 | Installation guide | `How can I install part number PS11752778?` | Step-by-step installation card with estimated time |
+| 4 | Dishwasher diagnosis | `My Whirlpool dishwasher has standing water at the bottom after the cycle. What should I check?` | Symptom diagnosis → drain pump / filter parts with repair guidance |
+| 5 | Parts for model | `What parts are available for my Whirlpool dishwasher model WDT780SAEM1?` | Product list card with all compatible parts for that model |
 
 ---
 
@@ -160,7 +162,7 @@ CHROMA_PERSIST_PATH=./chroma_db
 ALLOWED_ORIGINS=http://localhost:3000
 ```
 
-### `frontend/.env.local`
+### `frontend-revamp/.env.local`
 
 ```
 NEXT_PUBLIC_API_URL=http://localhost:8000
@@ -195,18 +197,30 @@ PartSelect Agent/
 │   │   └── seed_data.json       # 230 parts, 27 models, 2335 compatibility pairs, 12 symptoms
 │   └── models/schemas.py        # Pydantic models + input validation
 │
-└── frontend/
+└── frontend-revamp/             # Deployed to Vercel (vercel.json here)
     ├── app/
     │   ├── globals.css           # Tailwind v4 @theme inline teal tokens
-    │   ├── page.tsx              # Header + Demo dropdown + ChatWidget
-    │   └── api/chat/route.ts    # Next.js proxy → FastAPI SSE
-    └── components/
-        ├── ChatWidget.tsx        # SSE state machine, demo trigger, health check
-        ├── MessageBubble.tsx     # Text + rich card renderer
-        ├── ProductCard.tsx       # Part image / price / stock / CTA
-        ├── CompatibilityBadge.tsx
-        ├── InstallSteps.tsx
-        ├── TroubleshootCard.tsx
-        ├── ProductListCard.tsx
-        └── OrderStatusCard.tsx
+    │   ├── layout.tsx            # Root layout — font loading, viewport
+    │   ├── page.tsx              # Header + Demo dropdown + ChatWidget + HistorySidebar
+    │   └── api/
+    │       ├── chat/route.ts     # Next.js proxy → FastAPI SSE stream
+    │       ├── health/route.ts   # Proxy → FastAPI /api/health
+    │       ├── stats/route.ts    # Proxy → FastAPI /api/stats
+    │       └── conversations/    # Proxy routes for history CRUD
+    ├── components/
+    │   ├── ChatWidget.tsx        # SSE state machine, demo trigger, health check
+    │   ├── MessageBubble.tsx     # Text + rich card renderer
+    │   ├── MessageList.tsx       # Scroll sentinel, suggestion chips
+    │   ├── InputBar.tsx          # Auto-resize textarea, iOS zoom fix
+    │   ├── TypingIndicator.tsx   # Animated dots + tool-status label
+    │   ├── HistorySidebar.tsx    # Conversation history drawer
+    │   ├── ProductCard.tsx       # Part image / price / stock / CTA
+    │   ├── ProductListCard.tsx   # Paginated list of parts
+    │   ├── CompatibilityBadge.tsx
+    │   ├── InstallSteps.tsx
+    │   ├── TroubleshootCard.tsx
+    │   └── OrderStatusCard.tsx
+    └── lib/
+        ├── api.ts                # streamChat SSE generator + conversation helpers
+        └── types.ts              # Shared TypeScript interfaces
 ```
